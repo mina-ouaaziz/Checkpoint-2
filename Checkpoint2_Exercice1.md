@@ -1,4 +1,5 @@
-## Q.1.1
+ # Effectué en dehors du timing
+ ## Q.1.1
 Le ping ne fonctionne pas du serveur vers le client.
 
 ![Capture d'écran 2024-07-19 091721.png](https://github.com/mina-ouaaziz/Checkpoint-2/blob/main/captures/Capture%20d'écran%202024-07-19%20091721.png)
