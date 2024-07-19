@@ -1,5 +1,5 @@
 Q.1.1 le ping ne fonctionne pas du serveur vers le client. 
-!(https://github.com/mina-ouaaziz/Checkpoint-2/blob/main/captures/Capture%20d'écran%202024-07-19%20091721.png)
+![Capture d'écran 2024-07-19 091721.png](https://github.com/mina-ouaaziz/Checkpoint-2/blob/main/captures/Capture%20d'écran%202024-07-19%20091721.png)
 
 Cependant après avoir changé l'adresse IP du client le ping fonctionne parfaitement.
 ![https://github.com/mina-ouaaziz/Checkpoint-2/blob/main/captures/Capture%20d'écran%202024-07-19%20092320.png]
