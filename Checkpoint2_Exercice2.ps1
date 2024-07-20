@@ -1,6 +1,6 @@
  # Effectué en dehors du timing
-!(fichier de script PowerShell.ps1
-)[https://github.com/mina-ouaaziz/Checkpoint-2/blob/main/captures/fichier%20de%20script%20PowerShell.ps1]
+![fichier de script PowerShell.ps1
+](https://github.com/mina-ouaaziz/Checkpoint-2/blob/main/captures/fichier%20de%20script%20PowerShell.ps1)
 
  
  ### Q.2.1
