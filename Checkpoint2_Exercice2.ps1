@@ -20,8 +20,8 @@ Cela permet de lancer PowerShell en mode maximisé.
 Le premier utilisateur du fichier `Users.csv` n'est jamais pris en compte parce que le problème viendrait de la mention `skip 2` dans le `Select-Object` qui ignore les deux premières lignes du fichier `user.csv`.
 
 ### Q.2.6
-Il n'est pas inclus dans la création de l'utilisateur local.
-
+ Il n'est pas inclus dans la création de l'utilisateur local.
+ 
 ### Q.2.7
 J'ai ajouté la commande `Import-Csv` pour inclure que les éléments nécessaires.
 
