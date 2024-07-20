@@ -4,7 +4,7 @@
 J'ai fait un script pour transférer mon dossier Scripts du serveur vers le poste client.
 
 ![Scripts dossier client.png](https://github.com/mina-ouaaziz/Checkpoint-2/blob/main/captures/Scripts%20dossier%20client.png)
-!(Scripts dossier client.png)[https://github.com/mina-ouaaziz/Checkpoint-2/blob/main/captures/Scripts%20dossier%20client.png]
+![Scripts dossier client.png](https://github.com/mina-ouaaziz/Checkpoint-2/blob/main/captures/Scripts%20dossier%20client.png)
 
 ### Q.2.2
 Suite à l'ouverture de mon script sur le poste client, une page PowerShell s'ouvre mais se referme. Pour que le script `Main.ps1` soit fonctionnel, nous devons corriger l'emplacement du script `AddLocalUsers.ps1`, car il se trouve dans le dossier Scripts et non dans le dossier Temps.
@@ -53,6 +53,5 @@ La fonction `ManageAccentsAndCapitalLetters` sert à supprimer les accents et co
 - Nom original: Dumas -> Nom normalisé: dumas
 - Nom d'utilisateur complet normalisé: anna.dumas
 
-Voici mon script corrigé
-
-
+### Voici mon script corrigé
+![fichier de script PowerShell.ps1](https://github.com/mina-ouaaziz/Checkpoint-2/blob/main/captures/fichier%20de%20script%20PowerShell.ps1#L1)
