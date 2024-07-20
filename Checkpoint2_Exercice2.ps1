@@ -1,114 +1,60 @@
  # Effectué en dehors du timing
- # Vérifier si le script est exécuté avec des privilèges administratifs
-If (-not ([Security.Principal.WindowsIdentity]::GetCurrent().Groups -match "S-1-5-32-544")) {
-    Write-Host "Ce script doit être exécuté avec des privilèges administratifs." -ForegroundColor Red
-    exit
-}
+!(fichier de script PowerShell.ps1
+)[https://github.com/mina-ouaaziz/Checkpoint-2/blob/main/captures/fichier%20de%20script%20PowerShell.ps1]
 
-Write-Host "--- Début du script ---"
+ 
+ ### Q.2.1
+J'ai fait un script pour transférer mon dossier Scripts du serveur vers le poste client.
 
-# Importer le module contenant la fonction Log
-Import-Module "C:\Scripts\Functions.psm1"
+![Script Powershell.png](https://github.com/mina-ouaaziz/Checkpoint-2/blob/main/captures/Script%20Powershell.png)
+![Scripts dossier client.png](https://github.com/mina-ouaaziz/Checkpoint-2/blob/main/captures/Scripts%20dossier%20client.png)
 
-# Fonction pour générer un mot de passe aléatoire
-Function Random-Password ($length = 12) {  # Longueur du mot de passe par défaut est de 12 caractères
-    $punc = 46..46           # Code ASCII pour les caractères de ponctuation (.) 
-    $digits = 48..57         # Code ASCII pour les chiffres (0-9)
-    $letters = 65..90 + 97..122  # Code ASCII pour les lettres majuscules (A-Z) et minuscules (a-z)
+### Q.2.2
+Suite à l'ouverture de mon script sur le poste client, une page PowerShell s'ouvre mais se referme. Pour que le script `Main.ps1` soit fonctionnel, nous devons corriger l'emplacement du script `AddLocalUsers.ps1`, car il se trouve dans le dossier Scripts et non dans le dossier Temps.
 
-    # Générer un mot de passe en choisissant des caractères aléatoires parmi les codes spécifiés
-    $password = Get-Random -Count $length -InputObject ($punc + $digits + $letters) | `
-        ForEach-Object -Begin { $aa = $null } -Process { $aa += [char]$_ } -End { $aa }
-    Return $password.ToString()  # Retourner le mot de passe en tant que chaîne de caractères
-}
+![Script principal.png](https://github.com/mina-ouaaziz/Checkpoint-2/blob/main/captures/Script%20principal.png)
 
-# Fonction pour gérer les accents et convertir les lettres en minuscules
-Function ManageAccentsAndCapitalLetters {
-    param ([String]$String)
-    
-    # Remplacer les caractères accentués par leurs équivalents non accentués
-    $StringWithoutAccent = $String -replace '[éèêë]', 'e' -replace '[àâä]', 'a' -replace '[îï]', 'i' -replace '[ôö]', 'o' -replace '[ùûü]', 'u'
-    
-    # Convertir la chaîne en minuscules pour normaliser la casse
-    $StringWithoutAccentAndCapitalLetters = $StringWithoutAccent.ToLower()
-    
-    # Retourner la chaîne normalisée
-    $StringWithoutAccentAndCapitalLetters
-}
+### Q.2.3
+Cela lance le processus avec des privilèges d'administrateur.
 
-$Path = "C:\Scripts"
-$CsvFile = "$Path\Users.csv"
-$LogFile = "$Path\Log.log"
+### Q.2.4
+Cela permet de lancer PowerShell en mode maximisé.
 
-# Vérifier si le fichier CSV et le fichier de log existent
-If (-not (Test-Path -Path $CsvFile)) {
-    Write-Host "Le fichier CSV spécifié n'existe pas." -ForegroundColor Red
-    exit
-}
+### Q.2.5
+Le premier utilisateur du fichier `Users.csv` n'est jamais pris en compte parce que le problème viendrait de la mention `skip 2` dans le `Select-Object` qui ignore les deux premières lignes du fichier `user.csv`.
 
-# Importer le fichier CSV en sélectionnant uniquement les colonnes nécessaires pour la création des utilisateurs
-$Users = Import-Csv -Path $CsvFile -Delimiter ";" -Header "prenom","nom","description" -Encoding UTF8 | Select-Object prenom, nom, description
+### Q.2.6
+Il n'est pas inclus dans la création de l'utilisateur local.
 
-# Traitement de chaque utilisateur importé
-foreach ($User in $Users) {
-    # Normaliser le prénom et le nom en supprimant les accents et en convertissant en minuscules
-    $Prenom = ManageAccentsAndCapitalLetters -String $User.prenom
-    $Nom = ManageAccentsAndCapitalLetters -String $User.nom
-    # Créer un nom d'utilisateur complet basé sur le prénom et le nom normalisés
-    $Name = "$Prenom.$Nom"
+### Q.2.7
+J'ai ajouté la commande `Import-Csv` pour inclure que les éléments nécessaires.
 
-    # Vérifier si l'utilisateur existe déjà
-    If (-not (Get-LocalUser -Name $Name -ErrorAction SilentlyContinue)) {
-        # Générer un mot de passe aléatoire
-        $Pass = Random-Password
-        # Convertir le mot de passe en une chaîne sécurisée
-        $Password = (ConvertTo-SecureString $Pass -AsPlainText -Force)
-        # Préparer la description de l'utilisateur
-        $Description = "$($User.description)"
-        # Créer les informations de l'utilisateur
-        $UserInfo = @{
-            Name                 = $Name
-            FullName             = $Name
-            Password             = $Password
-            AccountNeverExpires  = $true   # L'utilisateur ne sera pas désactivé automatiquement
-            PasswordNeverExpires = $true   # Le mot de passe ne doit jamais expirer
-            Description          = $Description # Utilisation du champ Description
-        }
+### Q.2.8
+"Le compte `<Utilisateur>` a été créé avec le mot de passe `<MotDePasse>`" est bien en vert.
 
-        # Créer le nouvel utilisateur local
-        try {
-            New-LocalUser @UserInfo
-            # Ajouter l'utilisateur au groupe local "Utilisateurs"
-            try {
-                Add-LocalGroupMember -Group "Utilisateurs" -Member $Name
-                # Journaliser l'ajout au groupe
-                Log -Message "L'utilisateur $Name a été ajouté au groupe Utilisateurs" -LogLevel "Info"
-            } catch {
-                # Journaliser l'échec de l'ajout au groupe
-                Log -Message "Erreur lors de l'ajout de $Name au groupe Utilisateurs : $_" -LogLevel "Error"
-                Write-Host "Erreur lors de l'ajout de $Name au groupe Utilisateurs" -ForegroundColor Red
-            }
-            
-            # Journaliser la création de l'utilisateur
-            Log -Message "Le compte $Name a été créé avec le mot de passe $Pass" -LogLevel "Info"
+### Q.2.9
+Les deux façons sont soit d'importer le module au début du script, soit de changer le module dynamiquement.
 
-            # Afficher le message de confirmation avec le mot de passe en couleur verte
-            Write-Host "Le compte $Name a été créé avec le mot de passe $Pass" -ForegroundColor Green
-        } catch {
-            Write-Host "Erreur lors de la création de l'utilisateur $Name : $_" -ForegroundColor Red
-            Log -Message "Erreur lors de la création de l'utilisateur $Name : $_" -LogLevel "Error"
-        }
-    } else {
-        # Afficher le message d'erreur en couleur rouge si l'utilisateur existe déjà
-        Write-Host "Le compte $Name existe déjà" -ForegroundColor Red
+### Q.2.10
+"Le compte `<Utilisateur>` existe déjà" est bien en rouge.
 
-        # Journaliser l'existence de l'utilisateur
-        Log -Message "Le compte $Name existe déjà" -LogLevel "Warning"
-    }
-}
+### Q.2.12
+Dans le script, la chaîne `"$Prenom.$Nom"` est maintenant remplacée par une variable `$Name`.
 
-Write-Host "--- Fin du script ---"
+### Q.2.13
+Les comptes utilisateurs créés ont un mot de passe qui expire.
 
-# Pause jusqu'à ce que l'utilisateur appuie sur Entrée
-Read-Host -Prompt "Appuyez sur Entrée pour terminer"
+### Q.2.14
+Le mot de passe est maintenant constitué de 12 caractères au lieu de 6.
+
+### Q.2.15
+Le délai d'attente de 10 secondes a été ajouté.
+
+### Q.2.16
+La fonction `ManageAccentsAndCapitalLetters` sert à supprimer les accents et convertit aussi toutes les lettres en minuscules comme par exemple:
+- Prénom original: Anna -> Prénom normalisé: anna
+- Nom original: Dumas -> Nom normalisé: dumas
+- Nom d'utilisateur complet normalisé: anna.dumas
+
+
 
